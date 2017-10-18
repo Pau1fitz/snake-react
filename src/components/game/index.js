@@ -7,11 +7,12 @@ import './game.css';
 class Game extends Component {
 
   constructor(props) {
+
     super(props);
     this.state = {
       humanCards: [],
       computerCards: [],
-      deck: props.cards,
+      deck: [...props.cards],
       humanScore: 0,
       computerScore: 0,
       humanStuck: false,
@@ -27,6 +28,8 @@ class Game extends Component {
   }
 
   componentDidMount() {
+
+
     this.startGame();
   }
 
@@ -34,7 +37,7 @@ class Game extends Component {
     this.setState({
       humanCards: [],
       computerCards: [],
-      deck: this.props.cards,
+      deck: [...this.props.cards],
       humanScore: 0,
       computerScore: 0,
       humanStuck: false,
@@ -47,6 +50,7 @@ class Game extends Component {
   }
 
   startGame() {
+
     const { deck } = this.state;
     const dealOne = this.dealCard(deck);
     const dealTwo = this.dealCard(dealOne.cards);
