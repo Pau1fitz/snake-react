@@ -70,31 +70,15 @@
 
 .text {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 0.4;
   font-weight: 400;
   font-family: 'Source Sans Pro', sans-serif;
 }
 
-.text-dark-grey {
-  color: #36464E;
+.score-text {
+  font-size: 20px;
 }
 
-.text-white {
-  color: #FFFFFF;
-}
-
-.text-size-standard {
-  font-size: 16px;
-}
-
-.text-size-meta {
-  font-size: 11px;
-}
-
-.text-size-large {
-  font-size: 26px;
-}
-
-.text-size-huge {
-  font-size: 32px;
+.btn:hover {
+  opacity: 1;
 }

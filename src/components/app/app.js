@@ -1,12 +1,12 @@
 import React from 'react';
 import Game from '../game';
-import CardDeck from '../cardDeck';
+import CardDeckGenerator from '../../helper/cardDeckGenerator';
 
 import './app.css';
 
 function App() {
 
-  const cards = CardDeck();
+  const cards = CardDeckGenerator();
 
   return (
     <div className="app">

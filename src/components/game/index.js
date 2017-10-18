@@ -18,7 +18,7 @@ class Game extends Component {
       humanBust: false,
       computerBust: false,
       winner: null,
-      gameOver: false
+      gameOver: false,
     };
 
     this.hitHuman = this.hitHuman.bind(this);
@@ -36,7 +36,12 @@ class Game extends Component {
       computerCards: [],
       deck: this.props.cards,
       humanScore: 0,
-      computerScore: 0
+      computerScore: 0,
+      humanStuck: false,
+      humanBust: false,
+      computerBust: false,
+      winner: null,
+      gameOver: false,
     });
     this.startGame();
   }
@@ -57,7 +62,7 @@ class Game extends Component {
   }
 
   hitHuman() {
-    const { deck, humanBust, humanScore, gameOver } = this.state;
+    const { deck, humanBust } = this.state;
     const deal = this.dealCard(deck);
     const score = this.calculateScore([...this.state.humanCards, deal.card]);
 
@@ -80,8 +85,8 @@ class Game extends Component {
 
   stickHuman() {
 
-    setInterval(() => {
-        const { deck, computerBust, computerScore, humanScore, gameOver } = this.state;
+    const intervalId = setInterval(() => {
+        const { deck, humanScore, gameOver } = this.state;
         const deal = this.dealCard(deck);
         const score = this.calculateScore([...this.state.computerCards, deal.card]);
 
@@ -100,11 +105,16 @@ class Game extends Component {
             winner: 'Human',
             gameOver: true
           });
+
+          clearInterval(intervalId);
+
         } else if(score > humanScore) {
           this.setState({
             winner: 'Computer',
             gameOver: true
           });
+
+          clearInterval(intervalId);
         }
     }, 1000);
   }
@@ -121,13 +131,25 @@ class Game extends Component {
   }
 
   calculateScore(cards) {
-    return cards.map(card => {
-      return card.value === 'ace' ? 1 :
+    let score = cards.map(card => {
+      return card.value === 'ace' ? 11 :
         isNaN(card.value) ? 10 :
         card.value;
     }).reduce((a, b) => {
         return parseInt(a, 10) +  parseInt(b, 10);
     });
+
+    //handle ace
+    const cardValues = cards.map(card => {
+      return card.value;
+    });
+
+    if(score > 21 && cardValues.includes('ace')) {
+      score -= 10;
+    }
+
+    return score;
+
   }
 
   render() {
@@ -142,42 +164,56 @@ class Game extends Component {
     } = this.state;
 
     return (
-      <div className='card-container'>
 
-          {winner && (
-            <p>The winner is {winner}</p>
-          )}
+      <div className='game-container'>
 
-          <h4>Computer Cards</h4>
-          <p>{computerBust ? 'Bust' : computerScore}</p>
-          {computerCards.map((card, index) => {
-            return (
-              <div className='computer-cards' key={index}>
-                <Card suit={card.suit} value={card.value} />
-              </div>
-            )
-          })}
+          <div className='computer-cards-container'>
+            <div className='score-container'>
+              <Text type={'score-text'}>{computerBust ? 'Bust' : computerScore}</Text>
+            </div>
+            {computerCards.map((card, index) => {
+              return (
+                <div className='computer-cards' key={index}>
+                  <Card suit={card.suit} value={card.value} />
+                </div>
+              )
+            })}
 
-          <h4>Human Cards</h4>
-          <p>{humanBust ? 'Bust' : humanScore}</p>
-          {humanCards.map((card, index) => {
-            return (
-              <div className='human-cards' key={index}>
-                <Card suit={card.suit} value={card.value} />
-              </div>
-            )
-          })}
+            {winner === 'Computer' && (
+              <div className='winner'>WIN</div>
+            )}
+
+          </div>
+
+          <div className='human-cards-container'>
+            <div className='score-container'>
+              <Text type={'score-text'}>{humanBust ? 'Bust' : humanScore}</Text>
+            </div>
+
+            {humanCards.map((card, index) => {
+              return (
+                <div className='human-cards' key={index}>
+                  <Card suit={card.suit} value={card.value} />
+                </div>
+              )
+            })}
+
+            {winner === 'Human' && (
+              <div className='winner'>WIN</div>
+            )}
+
+          </div>
+
+
 
           <div className='button-container'>
-            <Button clickHandler={this.hitHuman}>HIT</Button>
-            <Button clickHandler={this.stickHuman} color={'tertiary'}>STICK</Button>
-            <Button clickHandler={this.resetGame}>RESET</Button>
+            <Button type={'btn hit-btn'} clickHandler={this.hitHuman}>HIT</Button>
+            <Button type={'btn stick-btn'} clickHandler={this.stickHuman} color={'tertiary'}>STICK</Button>
+            <Button type={'btn reset-btn'}  clickHandler={this.resetGame}>RESET</Button>
           </div>
       </div>
     );
   }
-
-
 }
 
 export default Game;

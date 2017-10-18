@@ -1,33 +1,19 @@
 import React, {PropTypes} from 'react';
-import cx from 'classnames';
 
 import './button.css';
 
-function Button({ color, children, clickHandler }) {
+function Button({ type, children, clickHandler }) {
   return (
-    <button
-      onClick={clickHandler}
-      role="button"
-      className={cx({
-        'button': true,
-        [`button-color-${color}`]: true
-      })}
-    >
+    <button onClick={clickHandler} className={type}>
       {children}
     </button>
   );
 }
 
 Button.propTypes = {
-  color: PropTypes.oneOf([
-    'primary',
-    'tertiary',
-  ]).isRequired,
+  type: PropTypes.string,
   children: PropTypes.node,
-};
-
-Button.defaultProps = {
-  color: 'primary',
+  clickHandler: PropTypes.func
 };
 
 export default Button;

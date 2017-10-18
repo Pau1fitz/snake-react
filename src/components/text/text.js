@@ -1,39 +1,17 @@
 import React, {PropTypes} from 'react';
-import cx from 'classnames';
-
 import './text.css';
 
-function Text({ color, size, children }) {
+function Text({ type, children }) {
   return (
-    <span
-      className={cx({
-        'text': true,
-        [`text-color-${color}`]: true,
-        [`text-size-${size}`]: true,
-      })}
-    >
+    <p className={type + ' text'}>
       {children}
-    </span>
+    </p>
   );
 }
 
 Text.propTypes = {
-  color: PropTypes.oneOf([
-    'white',
-    'dark-grey',
-  ]).isRequired,
-  size: PropTypes.oneOf([
-    'meta',
-    'standard',
-    'large',
-    'huge',
-  ]).isRequired,
+  type: PropTypes.string,
   children: PropTypes.node,
-};
-
-Text.defaultProps = {
-  color: 'dark-grey',
-  size: 'standard',
 };
 
 export default Text;

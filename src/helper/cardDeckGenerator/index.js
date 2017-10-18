@@ -1,4 +1,4 @@
-function CardDeck() {
+function CardDeckGenerator() {
 
   const suits = [
     'diamond',
@@ -35,4 +35,4 @@ function CardDeck() {
 
 }
 
-export default CardDeck;
+export default CardDeckGenerator;
