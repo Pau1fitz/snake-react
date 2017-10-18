@@ -10,10 +10,4 @@ function Button({ type, children, clickHandler }) {
   );
 }
 
-Button.propTypes = {
-  type: PropTypes.string,
-  children: PropTypes.node,
-  clickHandler: PropTypes.func
-};
-
 export default Button;

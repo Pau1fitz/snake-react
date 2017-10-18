@@ -9,9 +9,4 @@ function Text({ type, children }) {
   );
 }
 
-Text.propTypes = {
-  type: PropTypes.string,
-  children: PropTypes.node,
-};
-
 export default Text;
