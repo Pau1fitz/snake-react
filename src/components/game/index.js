@@ -1,222 +1,160 @@
-import React, { Component } from 'react';
-import Card from '../card';
-import Text from '../text';
-import Button from '../button';
-import './game.css';
+import React,  { Component } from 'react';
+import Board from '../board';
+import Snake from '../snake';
+import Food from '../food';
 
 class Game extends Component {
 
   constructor(props) {
-
     super(props);
-    this.state = {
-      humanCards: [],
-      computerCards: [],
-      deck: [...props.cards],
-      humanScore: 0,
-      computerScore: 0,
-      humanStuck: false,
-      humanBust: false,
-      computerBust: false,
-      winner: null,
-      gameOver: false,
-    };
 
-    this.hitHuman = this.hitHuman.bind(this);
-    this.stickHuman = this.stickHuman.bind(this);
-    this.resetGame = this.resetGame.bind(this);
+    this.state = {
+      snakeLeftPos: 1,
+      snakeTopPos: 1,
+      boardWidth: 25,
+      boardHeight: 25,
+      snakeLength: 1,
+      snakeDirection: 'up',
+      foodTopPosition: (Math.floor(Math.random() * 20) * 22) + 1,
+      foodLeftPosition: (Math.floor(Math.random() * 20) * 22) + 1,
+    }
+
+    this.changeDirection = this.changeDirection.bind(this);
   }
+
 
   componentDidMount() {
 
+    document.onkeydown = this.changeDirection;
 
-    this.startGame();
+    setInterval(() => {
+
+      this.startGame();
+
+    }, 100);
+
   }
 
-  resetGame() {
-    this.setState({
-      humanCards: [],
-      computerCards: [],
-      deck: [...this.props.cards],
-      humanScore: 0,
-      computerScore: 0,
-      humanStuck: false,
-      humanBust: false,
-      computerBust: false,
-      winner: null,
-      gameOver: false,
-    });
-    this.startGame();
+  changeDirection(e) {
+
+    const { snakeDirection } = this.state;
+
+    if(e.keyCode === 37 && snakeDirection !== 'right') {
+      this.setState({
+        snakeDirection: 'left'
+      });
+    } else if (e.keyCode === 38 && snakeDirection !== 'down') {
+      this.setState({
+        snakeDirection: 'up'
+      });
+    } else if (e.keyCode === 39 && snakeDirection !== 'left') {
+      this.setState({
+        snakeDirection: 'right'
+      });
+    }  else if (e.keyCode === 40 && snakeDirection !== 'up') {
+      this.setState({
+        snakeDirection: 'down'
+      });
+    }
   }
 
   startGame() {
 
-    const { deck } = this.state;
-    const dealOne = this.dealCard(deck);
-    const dealTwo = this.dealCard(dealOne.cards);
-    const dealThree = this.dealCard(dealTwo.cards);
+    const {
+      snakeDirection,
+      snakeLeftPos,
+      snakeTopPos,
+      foodTopPosition,
+      foodLeftPosition,
+      boardHeight,
+      boardWidth
+    } = this.state;
 
-    this.setState({
-      humanCards: [dealOne.card, dealThree.card],
-      computerCards: [dealTwo.card],
-      fullDeck: dealThree.cards,
-      humanScore: this.calculateScore([dealOne.card, dealThree.card]),
-      computerScore: isNaN(dealTwo.card.value) ? 10 : dealTwo.card.value
-    });
-  }
+    if(snakeTopPos === foodTopPosition && snakeLeftPos === foodLeftPosition) {
+      this.setState((prevState) => {
+        return {
+          snakeLength: prevState.snakeLength + 1,
+          foodTopPosition: (Math.floor(Math.random() * 20) * 22) + 1,
+          foodLeftPosition: (Math.floor(Math.random() * 20) * 22) + 1
+        }
+      })
+    }
 
-  hitHuman() {
-    const { deck, humanBust } = this.state;
-    const deal = this.dealCard(deck);
-    const score = this.calculateScore([...this.state.humanCards, deal.card]);
+    if (snakeDirection === 'right') {
+      this.setState((prevState) => {
+        if(prevState.snakeLeftPos >= (boardWidth - 1) * 22) {
+          return {
+            snakeLeftPos: 1
+          }
+        }
+        return {
+          snakeLeftPos: prevState.snakeLeftPos + 22
+        }
+      });
 
-    if(!humanBust) {
-      this.setState({
-        humanCards: [...this.state.humanCards, deal.card],
-        fullDeck: deal.cards,
-        humanScore: this.calculateScore([...this.state.humanCards, deal.card])
+    } else if(snakeDirection === 'left') {
+      this.setState((prevState) => {
+        if(prevState.snakeLeftPos <= 1) {
+          return {
+            snakeLeftPos: ((boardWidth - 1) * 22) + 1
+          }
+        }
+        return {
+          snakeLeftPos: prevState.snakeLeftPos - 22
+        }
       });
     }
 
-    if(score > 21) {
-      this.setState({
-        humanBust: true,
-        winner: 'Computer',
-        gameOver: true
-      })
-    }
-  }
+    else if(snakeDirection === 'down') {
+      if(snakeTopPos >= boardHeight * 21) {
+        this.setState((prevState) => {
+          return {
+            snakeTopPos: 1
+          }
+        });
 
-  stickHuman() {
-
-    const intervalId = setInterval(() => {
-        const { deck, humanScore, gameOver } = this.state;
-        const deal = this.dealCard(deck);
-        const score = this.calculateScore([...this.state.computerCards, deal.card]);
-
-        if(!gameOver) {
-          this.setState({
-            computerCards: [...this.state.computerCards, deal.card],
-            fullDeck: deal.cards,
-            computerScore: this.calculateScore([...this.state.computerCards, deal.card]),
-            humanStuck: true
-          });
-        }
-
-        if(score > 21) {
-          this.setState({
-            computerBust: true,
-            winner: 'Human',
-            gameOver: true
-          });
-
-          clearInterval(intervalId);
-
-        } else if(score > humanScore) {
-          this.setState({
-            winner: 'Computer',
-            gameOver: true
-          });
-
-          clearInterval(intervalId);
-        }
-    }, 1000);
-  }
-
-  dealCard(cards) {
-      const randomNumber = Math.floor(Math.random() * cards.length);
-      const card = cards[randomNumber];
-      cards.splice(randomNumber, 1);
-
-      return {
-        card,
-        cards
-      };
-  }
-
-  calculateScore(cards) {
-    let score = cards.map(card => {
-      return card.value === 'ace' ? 11 :
-        isNaN(card.value) ? 10 :
-        card.value;
-    }).reduce((a, b) => {
-        return parseInt(a, 10) +  parseInt(b, 10);
-    });
-
-    //handle ace
-    const cardValues = cards.map(card => {
-      return card.value;
-    });
-
-    if(score > 21 && cardValues.includes('ace')) {
-      score -= 10;
+      } else {
+        this.setState((prevState) => {
+          return {
+            snakeTopPos: prevState.snakeTopPos + 22
+          }
+        });
+      }
     }
 
-    return score;
-
+    else if(snakeDirection === 'up') {
+      this.setState((prevState) => {
+        if(snakeTopPos <= 1) {
+          return {
+            snakeTopPos: (boardHeight * 21) + 4
+          }
+        } else {
+          return {
+            snakeTopPos: prevState.snakeTopPos - 22
+          }
+        }
+      });
+    }
   }
 
   render() {
+
     const {
-      humanCards,
-      computerCards,
-      humanScore,
-      computerScore,
-      humanBust,
-      computerBust,
-      winner
+      snakeLeftPos,
+      snakeTopPos,
+      foodTopPosition,
+      foodLeftPosition,
+      snakeLength,
+      snakeDirection
     } = this.state;
 
     return (
-
-      <div className='game-container'>
-
-          <div className='computer-cards-container'>
-            <div className='score-container'>
-              <Text type={'score-text'}>{computerBust ? 'Bust' : computerScore}</Text>
-            </div>
-            {computerCards.map((card, index) => {
-              return (
-                <div className='computer-cards' key={index}>
-                  <Card suit={card.suit} value={card.value} />
-                </div>
-              )
-            })}
-
-            {winner === 'Computer' && (
-              <div className='winner'>WIN</div>
-            )}
-
-          </div>
-
-          <div className='human-cards-container'>
-            <div className='score-container'>
-              <Text type={'score-text'}>{humanBust ? 'Bust' : humanScore}</Text>
-            </div>
-
-            {humanCards.map((card, index) => {
-              return (
-                <div className='human-cards' key={index}>
-                  <Card suit={card.suit} value={card.value} />
-                </div>
-              )
-            })}
-
-            {winner === 'Human' && (
-              <div className='winner'>WIN</div>
-            )}
-
-          </div>
-
-
-
-          <div className='button-container'>
-            <Button type={'btn hit-btn'} clickHandler={this.hitHuman}>HIT</Button>
-            <Button type={'btn stick-btn'} clickHandler={this.stickHuman} color={'tertiary'}>STICK</Button>
-            <Button type={'btn reset-btn'}  clickHandler={this.resetGame}>RESET</Button>
-          </div>
+      <div>
+        <Board height={25} width={25} />
+        <Snake direction={snakeDirection} length={snakeLength} left={snakeLeftPos} top={snakeTopPos} />
+        <Food left={foodLeftPosition} top={foodTopPosition} />
       </div>
-    );
+    )
   }
 }
 

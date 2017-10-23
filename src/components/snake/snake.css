@@ -1,0 +1,16 @@
+.snake {
+  height: 20px;
+  width: 20px;
+  background: green;
+  position: relative;
+  top: 1px;
+  left: 1px;
+}
+
+
+.snake-container {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+}
