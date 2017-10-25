@@ -28,21 +28,23 @@ export default ({left, top, length, direction}) => {
       let headTop = parseInt(previousNode[0].style.top, 10) - 20;
       // calculate direction
       if(index > 3) {
-        var newLeft = parseInt(previousNode[index - 2].style.left, 10);
-        var newTop = parseInt(previousNode[index - 2].style.top, 10) - 20;
-        if(newLeft > left) {
+
+        let newLeft = parseInt(previousNode[index - 2].style.left, 10);
+        let newTop = parseInt(previousNode[index - 2].style.top, 10) - 20;
+
+        if(newLeft === left && (newTop - 20) === top) {
+          snakeDirection[index] = direction;
+        } else if(newLeft > left) {
           snakeDirection[index] = 'right'
         } else if(newLeft < left) {
           snakeDirection[index] = 'left'
         } else if(newTop > top) {
           snakeDirection[index] = 'down'
-        } else if (newTop < top) {
+        } else if (newTop <= top) {
           snakeDirection[index] = 'up'
         }
 
-        console.log(snakeDirection)
-
-        if(snakeDirection[index] !== direction && newLeft === headLeft && newTop === headTop) {
+        if(snakeDirection[index] !== direction && newLeft === headLeft && (newTop - 20) === headTop) {
           console.log('colide');
         }
       }
