@@ -31,7 +31,7 @@ class Game extends Component {
 
       this.startGame();
 
-    }, 100);
+    }, 500);
 
   }
 

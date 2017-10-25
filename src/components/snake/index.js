@@ -31,14 +31,16 @@ export default ({left, top, length, direction}) => {
         var newLeft = parseInt(previousNode[index - 2].style.left, 10);
         var newTop = parseInt(previousNode[index - 2].style.top, 10) - 20;
         if(newLeft > left) {
-          snakeDirection[index] = 'left'
-        } else if(newLeft < left) {
           snakeDirection[index] = 'right'
+        } else if(newLeft < left) {
+          snakeDirection[index] = 'left'
         } else if(newTop > top) {
-          snakeDirection[index] = 'up'
-        } else if (newTop < top) {
           snakeDirection[index] = 'down'
+        } else if (newTop < top) {
+          snakeDirection[index] = 'up'
         }
+
+        console.log(snakeDirection)
 
         if(snakeDirection[index] !== direction && newLeft === headLeft && newTop === headTop) {
           console.log('colide');
